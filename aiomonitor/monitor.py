@@ -72,12 +72,14 @@ class Monitor:
                  loop: asyncio.AbstractEventLoop, *,
                  host: str = MONITOR_HOST,
                  port: int = MONITOR_PORT,
+                 path: Optional[str] = None,
                  console_port: int = CONSOLE_PORT,
                  console_enabled: bool = True,
                  locals: OptLocals = None) -> None:
         self._loop = loop or asyncio.get_event_loop()
         self._host = host
         self._port = port
+        self._path = path
         self._console_port = console_port
         self._console_enabled = console_enabled
         self._locals = locals
@@ -130,9 +132,12 @@ class Monitor:
             self._closed = True
 
     def _server(self) -> None:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if self._path:
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        else:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         except AttributeError:
             pass
@@ -140,7 +145,10 @@ class Monitor:
         # set the timeout to prevent the server loop from
         # blocking indefinitaly on sock.accept()
         sock.settimeout(0.5)
-        sock.bind((self._host, self._port))
+        if self._path:
+            sock.bind(self._path)
+        else:
+            sock.bind((self._host, self._port))
         sock.listen(1)
         with sock:
             while not self._closing.is_set():
@@ -416,11 +424,12 @@ def start_monitor(loop: Loop, *,
                   monitor: Type[Monitor] = Monitor,
                   host: str = MONITOR_HOST,
                   port: int = MONITOR_PORT,
+                  path: Optional[str] = None,
                   console_port: int = CONSOLE_PORT,
                   console_enabled: bool = True,
                   locals: OptLocals = None) -> Monitor:
 
-    m = monitor(loop, host=host, port=port, console_port=console_port,
+    m = monitor(loop, host=host, port=port, path=path, console_port=console_port,
                 console_enabled=console_enabled, locals=locals)
     m.start()
 
