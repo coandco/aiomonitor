@@ -1,5 +1,10 @@
 CHANGES
 =======
+0.4.6 (2025-05-02)
+------------------
+
+* Fix issue with Amazon Linux not supporting SO_REUSEPORT on unix sockets
+
 
 0.4.5 (2019-11-03)
 ------------------
