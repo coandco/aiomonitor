@@ -15,7 +15,8 @@ def read(f):
 
 
 install_requires = ['terminaltables',
-                    'aioconsole']
+                    'aioconsole',
+                    'telnetlib3']
 extras_require = {}
 
 

@@ -1,6 +1,6 @@
 import asyncio
 import pytest
-import telnetlib
+import telnetlib3 as telnetlib
 import threading
 import time
 

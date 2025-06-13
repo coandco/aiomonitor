@@ -1,5 +1,5 @@
 import argparse
-import telnetlib
+import telnetlib3 as telnetlib
 
 from .monitor import MONITOR_HOST, MONITOR_PORT
 

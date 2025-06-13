@@ -3,7 +3,7 @@ import contextlib
 import linecache
 import selectors
 import sys
-import telnetlib
+import telnetlib3 as telnetlib
 import traceback
 from concurrent.futures import Future  # noqa
 from typing import Callable, IO, Any, Optional, List, Set  # noqa
